@@ -1,0 +1,73 @@
+# Import LCDProc server module
+from lcdproc.server import Server
+
+# Instantiate LCDProc and start session
+lcd = Server(debug=False)
+lcd.start_session()
+
+# Add screen with 3 second duration and no heartbeat
+screenT = lcd.add_screen("TemperatureScreen")
+screenT.set_heartbeat("off")
+screenT.set_duration(3)
+
+
+There are 7 methods to add content to a screen.
+The content is referred to as widgets.
+Each widget must have a unique name which is passed in the ref argument.
+
+- String widget method adds text at the specified x, y coordinates which are specified in character columns and rows:
+    
+    add_string_widget(ref, text, x, y)  
+
+- The title widget displays centered text at the top of the screen with blocks on both sides.
+
+    add_title_widget(ref, text)
+
+- Horizontal and vertical Widgets draw bars at x, y coordinates and the length is measured in pixels.
+
+    add_hbar_widget(ref, x, y, length)
+    add_vbar_widget(ref, x, y, length)
+
+- Icon Widget, Several icons are available such as arrows and hearts.
+
+    add_icon_widget(ref, x, y, name)
+
+    Valid names (coded inside LCDd source code)
+    } icontable[] = {
+	    {ICON_BLOCK_FILLED, "BLOCK_FILLED"},
+	    {ICON_HEART_OPEN, "HEART_OPEN"},
+	    {ICON_HEART_FILLED, "HEART_FILLED"},
+	    {ICON_ARROW_UP, "ARROW_UP"},
+	    {ICON_ARROW_DOWN, "ARROW_DOWN"},
+	    {ICON_ARROW_LEFT, "ARROW_LEFT"},
+	    {ICON_ARROW_RIGHT, "ARROW_RIGHT"},
+	    {ICON_CHECKBOX_OFF, "CHECKBOX_OFF"},
+	    {ICON_CHECKBOX_ON, "CHECKBOX_ON"},
+	    {ICON_CHECKBOX_GRAY, "CHECKBOX_GRAY"},
+	    {ICON_SELECTOR_AT_LEFT, "SELECTOR_AT_LEFT"},
+	    {ICON_SELECTOR_AT_RIGHT, "SELECTOR_AT_RIGHT"},
+	    {ICON_ELLIPSIS, "ELLIPSIS"},
+	    {ICON_PAUSE, "PAUSE"},
+	    {ICON_PLAY, "PLAY"},
+	    {ICON_PLAYR, "PLAYR"},
+	    {ICON_FF, "FF"},
+	    {ICON_FR, "FR"},
+	    {ICON_NEXT, "NEXT"},
+	    {ICON_PREV, "PREV"},
+	    {ICON_REC, "REC"},
+	    {0,NULL}
+    };
+
+
+- Scroller widget displays scrolling text.  The direction argument can be h (horizontal), v (vertical or m (marquee).
+
+    add_scroller_widget(ref, left, top, right, bottom, direction, speed, text)
+
+- Number widgets are large font numbers which take up the full display height.  The value can only be 0 to 9 or 10 for a dash.
+
+    add_number_widget(ref, x, value)  
+
+Number widgets, icon widgets and the bar widgets all use custom characters. Therefore, only 1 of these 4 types can be used per screen.
+
+
+
