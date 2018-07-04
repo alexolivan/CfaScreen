@@ -80,7 +80,7 @@ def defineSysMenuScreen():
 
 # Second Level Screens (entry point for chained screens)
 def defineCPUMenuScreen():
-	newScreen = CfaScreen.CfaScreen("CpuSubmenu")
+	newScreen = CfaScreen.CfaScreen("SysSubmenu")
 	cpucount = psutil.cpu_count()
 	newScreen.pushNextScreen(defineMainCpuScreen())
 	for i in range (0, cpucount):
@@ -108,6 +108,16 @@ def defineDiskMenuScreen():
 
 def defineTempMenuScreen():
 	newScreen = CfaScreen.CfaScreen("TempSubmenu")
+	sensorTemperatures = psutil.sensors_temperatures()
+	for sensor, temperatures in sensorTemperatures.iteritems():
+		index = 0
+		for temperature in temperatures:
+			if not temperature.label:
+				label = sensor + str(index)
+			else:
+				label = temperature.label.replace(' ', '')
+			newScreen.pushNextScreen(definePerTempSensorInfoScreen(sensor, label, index))
+			index += 1
 	return newScreen
 
 
@@ -211,6 +221,7 @@ def defineMainMemScreen():
 
 	return newScreen
 
+# Memory usage per memory type info screens
 def definePerMemtypeInfoScreen(meminfo, memtype):
 	newScreen = CfaScreen.CfaScreen(memtype)
 	newScreen.tDelta = 300
@@ -274,6 +285,7 @@ def defineMainPartitionsScreen():
 
 	return newScreen
 
+
 def definePerPartitionInfoScreen(partition):
 	newScreen = CfaScreen.CfaScreen(partition.mountpoint)
 	newScreen.tDelta = 500
@@ -301,6 +313,35 @@ def definePerPartitionInfoScreen(partition):
 	newScreen.updateWidgets = updateWidgets
 
 	return newScreen
+
+def definePerTempSensorInfoScreen(sensor, label, index):
+	newScreen = CfaScreen.CfaScreen(label)
+	newScreen.tDelta = 500
+
+	# Override init function -> declare widgets/initilialize leds
+	def init(screen):
+		newScreen.label = label
+		newScreen.critical = psutil.sensors_temperatures()[sensor][index].critical
+		newScreen.widgets['sensor_widget'] = screen.add_string_widget("mount_widget", "sensor: " + newScreen.label, 1, 1)
+		newScreen.widgets['current_widget'] = screen.add_string_widget("current_widget", "0C", 1, 2)
+
+		newScreen.widgets['hbar_widget'] = screen.add_hbar_widget("hbar_widget", 1, 3, 0)
+	newScreen.init = init
+
+	# Override updateWidgets -> MAIN LOGIC here (Value updates)
+	def updateWidgets(screen):
+		current = psutil.sensors_temperatures()[sensor][index].current
+		percent = float(current / float(newScreen.critical) * 100)
+		newScreen.update_widget_text(newScreen.widgets['current_widget'], str(current) + "C")
+
+		barlength = int(percent)
+		newScreen.update_widget_bar(newScreen.widgets['hbar_widget'], barlength)
+
+		newScreen.update_LED_meter_bar(percent)
+	newScreen.updateWidgets = updateWidgets
+
+	return newScreen
+
 
 # Auxiliary functions/methods
 def format_bytes(bytes_num):
