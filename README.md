@@ -5,8 +5,8 @@ CristalFontz python micro-framework.
 ![screenshot6](/screenshots/cfa635-6.jpg "screenshot6") ![screenshot7](/screenshots/cfa635-7.jpg "screenshot7")
 
 
-A tiny python kind of framework using, resulting of my work on trying to control
-ALSA Sound Card audio setup using the CFA635 LCD, as a kind of LCD-keypress
+A tiny python kind of framework, resulting of my work on trying to control
+ALSA Sound Card audio setup using the CFA635 LCD... as a kind of LCD-keypress
 based ALSAmixer.
 
 To ease auto-generation of screens upon parsing ALSA mixer controls, I created
